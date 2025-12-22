@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoiShaCoAy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -202,136 +207,130 @@
             margin-top: 5px;
         }
 
-        /* Gift Button */
-        /* Gift Button */
-        .gift-btn {
+        /* Greeting Card - Animated */
+        .card-wrapper {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            font-size: 50px;
-            cursor: pointer;
             z-index: 1000;
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-envelope {
+            font-size: 60px;
+            cursor: pointer;
+            filter: drop-shadow(0 0 15px gold);
+            animation: bounce 3s infinite;
             background: rgba(255, 255, 255, 0.1);
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            backdrop-filter: blur(5px);
             border: 1px solid rgba(212, 175, 55, 0.3);
-            animation: bounce 3s infinite;
-            filter: drop-shadow(0 0 10px gold);
-            transition: all 0.3s;
-            pointer-events: auto;
+            backdrop-filter: blur(5px);
             user-select: none;
             -webkit-user-select: none;
         }
 
-        .gift-btn:hover {
-            transform: scale(1.1) rotate(10deg);
-            background: rgba(212, 175, 55, 0.2);
-            border-color: #d4af37;
+        .card-wrapper.center-stage {
+            bottom: 50%;
+            right: 50%;
+            transform: translate(50%, 50%) scale(1.5);
         }
 
-        @keyframes bounce {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        .card-wrapper.center-stage .card-envelope {
             background: rgba(0, 0, 0, 0.8);
-            z-index: 200;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: #1a1a1a;
-            border: 2px solid #d4af37;
-            padding: 30px;
+            border-color: #d4af37;
+            animation: none;
             border-radius: 10px;
-            text-align: center;
-            color: #d4af37;
-            font-family: 'Times New Roman', serif;
-            position: relative;
+            width: auto;
+            height: auto;
+            padding: 20px;
+            font-size: 40px;
+            flex-direction: column;
         }
 
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 30px;
-            cursor: pointer;
-            color: #fff;
+        .card-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.5s 0.3s;
         }
 
-        .modal-content input {
-            padding: 10px;
-            border-radius: 5px;
+        .card-wrapper.center-stage .card-form {
+            opacity: 1;
+        }
+
+        .card-form input {
+            padding: 8px;
+            margin: 5px;
             border: 1px solid #d4af37;
-            background: #333;
-            color: white;
-            width: 200px;
+            background: #222;
+            color: #d4af37;
+            border-radius: 4px;
+            font-family: 'Cinzel', serif;
+            text-align: center;
         }
 
-        .modal-content button {
-            padding: 10px 20px;
+        .card-form button {
+            padding: 5px 15px;
             background: #d4af37;
-            color: black;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            margin-left: 10px;
         }
 
-        /* Wish Display Overlay */
-        #wish-container {
+        .card-form p {
+            color: #d4af37;
+            font-size: 10px;
+            margin: 0 0 5px 0;
+            font-family: 'Cinzel', serif;
+        }
+
+        .card-err {
+            color: #ff4444;
+            font-size: 8px;
+            margin-top: 5px;
+        }
+
+        /* Wish Side Panel */
+        .wish-side-panel {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 800px;
-            text-align: center;
-            z-index: 150;
+            top: 30%;
+            right: 5%;
+            width: 300px;
+            text-align: right;
+            z-index: 900;
             pointer-events: auto;
             cursor: pointer;
-            text-shadow: 0 0 20px black;
         }
 
         #wish-text {
-            font-family: 'Cinzel', serif;
-            font-size: 32px;
             color: #fff;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 40px;
-            border-radius: 15px;
-            border: 2px solid rgba(212, 175, 55, 0.5);
-            line-height: 1.6;
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            line-height: 1.4;
+            text-shadow: 0 0 10px #d4af37, 2px 2px 2px #000;
+            white-space: pre-wrap;
         }
 
         .wish-note {
-            margin-top: 10px;
-            color: #aaa;
-            font-size: 14px;
+            color: rgba(212, 175, 55, 0.6);
+            font-size: 12px;
+            margin-top: 15px;
+            font-family: 'Cinzel', serif;
             font-style: italic;
         }
+
+
 
         .hidden {
             display: none !important;
@@ -398,17 +397,7 @@
         <canvas id="webcam-preview"></canvas>
     </div>
 
-    <!-- Password Modal -->
-    <div id="gift-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeGiftModal()">&times;</span>
-            <h2>Mở Hộp Quà Bí Mật 🎁</h2>
-            <p>Nhập mật khẩu để nhận lời chúc:</p>
-            <input type="password" id="guest-pass" placeholder="Mật khẩu...">
-            <button onclick="getWishes()">Mở Hộp</button>
-            <p id="gift-error" style="color: #ff4444; margin-top: 10px;"></p>
-        </div>
-    </div>
+
 
     <!-- Wish Display -->
     <div id="wish-container" class="hidden">
@@ -1097,31 +1086,71 @@
         let wishesList = [];
         let currentWishIndex = 0;
 
-        window.openGiftModal = function () {
-            document.getElementById('gift-modal').classList.remove('hidden');
-        }
-        window.closeGiftModal = function () {
-            document.getElementById('gift-modal').classList.add('hidden');
+        window.openCard = function () {
+            const card = document.getElementById('greeting-card-container');
+            const input = document.getElementById('guest-pass');
+
+            // Add class to fly to center
+            card.classList.add('center-stage');
+
+            // Focus input after animation
+            setTimeout(() => {
+                input.focus();
+            }, 600);
         }
 
-        window.getWishes = function () {
+        window.getWishes = function (event) {
+            if (event) event.stopPropagation(); // Prevent clicking card parent
+
             const pass = document.getElementById('guest-pass').value;
+            const btn = document.querySelector('#card-form button');
+            const originalText = btn.innerText;
+            btn.innerText = "⏳";
+
             fetch('/api/wishes', {
                 headers: { 'x-guest-password': pass }
             })
                 .then(res => {
-                    if (!res.ok) throw new Error('Mật khẩu chưa đúng nha! 🎅');
+                    if (!res.ok) throw new Error('Mật khẩu chưa đúng nha! 💔');
                     return res.json();
                 })
                 .then(data => {
                     wishesList = data;
                     if (!wishesList || wishesList.length === 0) throw new Error('Chưa có lời chúc nào cả!');
 
-                    closeGiftModal();
+                    // SUCCESS SEQUENCE
+                    // 1. Hide Card
+                    document.getElementById('greeting-card-container').classList.add('hidden');
+
+                    // 2. Switch Mode to TREE
+                    STATE.mode = 'TREE';
+                    STATE.lastModeChange = clock.elapsedTime;
+                    STATE.focusTarget = null;
+
+                    // 3. Show Side Panel & Start Wishes
                     startWishSequence();
                 })
                 .catch(err => {
-                    document.getElementById('gift-error').innerText = err.message;
+                    // Show error in card
+                    const form = document.getElementById('card-form');
+                    // Remove existing error if any
+                    const oldErr = form.querySelector('.card-err');
+                    if (oldErr) oldErr.remove();
+
+                    const p = document.createElement('p');
+                    p.className = 'card-err';
+                    p.innerText = err.message;
+                    form.appendChild(p);
+
+                    // Shake animation
+                    const card = document.getElementById('greeting-card-container');
+                    card.style.transform = "translate(50%, 50%) scale(1.5) rotate(5deg)";
+                    setTimeout(() => card.style.transform = "translate(50%, 50%) scale(1.5) rotate(-5deg)", 100);
+                    setTimeout(() => card.style.transform = "translate(50%, 50%) scale(1.5) rotate(0deg)", 200);
+
+                })
+                .finally(() => {
+                    btn.innerText = originalText;
                 });
         }
 
@@ -1130,25 +1159,30 @@
             container.classList.remove('hidden');
             currentWishIndex = 0;
             showNextWish();
-
-            // Click anywhere on container to next
-            container.onclick = showNextWish;
         }
+
+        window.nextWish = function () {
+            showNextWish();
+        }
+
+        // Click on container to next
+        document.getElementById('wish-container').onclick = window.nextWish;
 
         function showNextWish() {
             if (currentWishIndex >= wishesList.length) {
-                // End sequence
-                document.getElementById('wish-container').classList.add('hidden');
-                return;
+                // Loop or End? Let's Loop for nice effect or just stay at last
+                // Let's loop
+                currentWishIndex = 0;
             }
 
             const text = wishesList[currentWishIndex];
             const el = document.getElementById('wish-text');
-            el.innerHTML = '';
+            el.innerHTML = ''; // Clear previous
 
             // Typewriter effect
             let i = 0;
-            const speed = 50;
+            const speed = 60; // Slightly slower for elegance
+
             function typeWriter() {
                 if (i < text.length) {
                     el.innerHTML += text.charAt(i);
