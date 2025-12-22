@@ -55,7 +55,7 @@ An immersive 3D Christmas tree experience built with Three.js, featuring hand ge
 
 ### Run Locally
 
-Simply open `noel_nhh.html` in a modern web browser:
+Simply open `index.html` in a modern web browser:
 
 ```bash
 # Clone the repository
@@ -63,7 +63,7 @@ git clone git@github.com:HoangTechCS-AIE/christmas-tree-3d-nhh.git
 cd christmas-tree-3d-nhh
 
 # Open in browser (Linux)
-xdg-open noel_nhh.html
+xdg-open index.html
 
 # Or just double-click the file
 ```
@@ -85,7 +85,7 @@ xdg-open noel_nhh.html
 
 ```
 christmas-tree-3d-nhh/
-├── noel_nhh.html         # Main application (single file)
+├── index.html            # Main application (single file)
 └── README.md             # This file
 ```
 
