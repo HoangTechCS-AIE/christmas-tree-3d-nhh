@@ -1,47 +1,57 @@
 
-import { createClient } from '@vercel/kv';
+import Redis from 'ioredis';
+
+// Singleton pattern for Vercel (to avoid too many connections in hot reloads)
+let redis;
+
+if (!redis) {
+    const connectionString = process.env.REDIS_URL || process.env.KV_URL || process.env.KV_REST_API_URL;
+
+    if (!connectionString) {
+        console.error("FATAL: Missing REDIS_URL or KV_URL");
+    } else {
+        // Handle case where user might confuse https url with redis url
+        // ioredis needs 'redis://' or 'rediss://'
+        if (connectionString.startsWith('http')) {
+            console.warn("Warning: Using HTTP URL with ioredis. This might fail if not using REST proxy.");
+        }
+
+        try {
+            redis = new Redis(connectionString);
+        } catch (e) {
+            console.error("Redis Init Error:", e);
+        }
+    }
+}
 
 export default async function handler(req, res) {
-    // 1. Debug & Validation - Runs on EVERY request
-    const kvUrl = process.env.KV_REST_API_URL || process.env.REDIS_REST_API_URL;
-    const kvToken = process.env.KV_REST_API_TOKEN || process.env.REDIS_REST_API_TOKEN;
-
-    if (!kvUrl || !kvToken) {
-        console.error("FATAL: Missing Environment Variables");
-        console.error("URL Status:", kvUrl ? "OK" : "MISSING");
-        console.error("TOKEN Status:", kvToken ? "OK" : "MISSING");
-
-        return res.status(500).json({
-            error: `Server Config Error: ${!kvUrl ? 'Missing URL' : ''} ${!kvToken ? 'Missing TOKEN' : ''}`.trim()
-        });
+    // Check connection first
+    if (!redis) {
+        return res.status(500).json({ error: 'Server Config Error: Missing Database URL (REDIS_URL)' });
     }
 
-    // 2. Safe Connection
-    const kv = createClient({
-        url: kvUrl,
-        token: kvToken,
-    });
-
-    // 3. Request Handling
     if (req.method === 'GET') {
         const guestPassword = req.headers['x-guest-password'];
         const adminPassword = req.headers['x-admin-password'];
 
         if (guestPassword === process.env.GUEST_PASSWORD || adminPassword === process.env.ADMIN_PASSWORD) {
             try {
-                let wishes = await kv.get('wishes');
+                let wishesStr = await redis.get('wishes');
+                let wishes = wishesStr ? JSON.parse(wishesStr) : null;
+
                 if (!wishes) {
                     wishes = [
                         "Chúc bạn Giáng Sinh an lành! 🎄",
                         "Năm mới thật nhiều niềm vui và hạnh phúc! ❤️",
                         "Sức khỏe dồi dào, vạn sự như ý! 🎉"
                     ];
-                    await kv.set('wishes', wishes);
+                    // Cache for 30 days
+                    await redis.set('wishes', JSON.stringify(wishes));
                 }
                 return res.status(200).json(wishes);
             } catch (error) {
-                console.error("KV GET Error:", error);
-                return res.status(500).json({ error: 'Database Connection Failed: ' + error.message });
+                console.error("Redis GET Error:", error);
+                return res.status(500).json({ error: 'Connection Failed: ' + error.message });
             }
         } else {
             return res.status(401).json({ error: 'Sai mật khẩu rồi!' });
@@ -60,11 +70,11 @@ export default async function handler(req, res) {
         }
 
         try {
-            await kv.set('wishes', wishes);
+            await redis.set('wishes', JSON.stringify(wishes));
             return res.status(200).json({ success: true, wishes });
         } catch (error) {
-            console.error("KV SET Error:", error);
-            return res.status(500).json({ error: 'Database Save Failed: ' + error.message });
+            console.error("Redis SAVE Error:", error);
+            return res.status(500).json({ error: 'Save Failed: ' + error.message });
         }
     }
 
