@@ -27,8 +27,10 @@ export default async function handler(req, res) {
                 }
                 return res.status(200).json(wishes);
             } catch (error) {
-                console.error(error);
-                return res.status(500).json({ error: 'Database connection failed' });
+                console.error("DB Error:", error);
+                console.log("KV_URL:", process.env.KV_REST_API_URL ? "Exists" : "Missing");
+                console.log("REDIS_URL:", process.env.REDIS_REST_API_URL ? "Exists" : "Missing");
+                return res.status(500).json({ error: 'Database connection failed: ' + error.message });
             }
         } else {
             return res.status(401).json({ error: 'Sai mật khẩu rồi!' });
