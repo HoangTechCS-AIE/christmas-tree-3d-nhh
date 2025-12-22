@@ -1,145 +1,87 @@
-# 🎄 3D Interactive Christmas Tree
+# 🎄 Cây Thông Noel 3D Tương Tác (Interactive 3D Christmas Tree)
 
-An immersive 3D Christmas tree experience built with Three.js, featuring hand gesture controls, dynamic snow effects, and customizable color themes.
+Dự án web 3D tương tác mừng Giáng Sinh và Năm Mới, được xây dựng bằng **Three.js** và **MediaPipe**. Ứng dụng mang đến trải nghiệm thị giác ấn tượng với cây thông được cấu tạo từ hàng ngàn hạt particles, hệ thống tuyết rơi vật lý, và khả năng tương tác qua cử chỉ tay AI.
 
-![Christmas Tree Demo](https://img.shields.io/badge/Three.js-v0.160.0-green) ![MediaPipe](https://img.shields.io/badge/MediaPipe-Hand_Tracking-blue) ![License](https://img.shields.io/badge/License-MIT-yellow)
+![Three.js](https://img.shields.io/badge/Three.js-v0.160.0-black) ![MediaPipe](https://img.shields.io/badge/MediaPipe-Hand_Tracking-blue) ![JavaScript](https://img.shields.io/badge/ES6+-JavaScript-yellow)
 
-## ✨ Features
+## ✨ Tính Năng Nổi Bật (Dựa trên Source Code)
 
-### 🎨 6 Color Themes
+### 🎵 1. Music Visualizer (Mới)
+*   **Phản ứng theo nhạc**: Cây thông sẽ thay đổi kích thước và độ rực rỡ dựa trên giải tần số âm thanh (bass) của bài hát đang phát.
+*   **Tải nhạc cá nhân**: Người dùng có thể tải lên file âm thanh (`.mp3`, `.wav`) thông qua nút **"Thêm Nhạc"**.
+*   **Công nghệ**: Sử dụng `Web Audio API` (`AudioContext`, `AnalyserNode`) để phân tích dữ liệu âm thanh thời gian thực.
 
-- **Midnight Aurora** 🌌 - Neon green cyberpunk aesthetic
-- **Sakura Dream** 🌸 - Pink and violet romantic theme
-- **Ocean Breeze** 🌊 - Turquoise tropical vibes
-- **Sunset Fire** 🔥 - Warm orange and gold tones
-- **Forest Mystic** 🌲 - Natural green and gold
-- **Arctic Frost** ❄️ - Icy white and blue wonderland
+### ⏳ 2. Đồng Hồ Đếm Ngược
+*   Hiển thị thời gian thực còn lại đến ngày Giáng Sinh (25/12) theo Ngày : Giờ : Phút : Giây.
+*   Giao diện hộp số trong suốt sang trọng.
 
-### ❄️ Dynamic Snow System
+### 🌟 3. Ngôi Sao Đỉnh Cây (Merkaba Star)
+*   Ngôi sao 3D lộng lẫy được tạo thành từ tích hai hình tứ diện (`TetrahedronGeometry`) lồng vào nhau.
+*   Hiệu ứng phát sáng (`Emissive Material`) và ánh sáng điểm (`PointLight`) vàng rực rỡ.
 
-- 1200+ realistic snowflakes with physics simulation
-- Gravity, wind drift, and turbulence effects
-- Interactive hand gesture wind control
-- Toggle on/off with smooth animations
+### 🎨 4. Hệ Thống 6 Chủ Đề Màu Sắc (Color Themes)
+Nhấn phím **'C'** để chuyển đổi giữa các tông màu:
+1.  **Midnight Aurora** 🌌 (Mặc định): Xanh Neon & Tím Đen.
+2.  **Sakura Dream** 🌸: Hồng Phấn & Tím Violet.
+3.  **Ocean Breeze** 🌊: Xanh Ngọc & Xanh Biển.
+4.  **Sunset Fire** 🔥: Cam Cháy & Vàng Kim.
+5.  **Forest Mystic** 🌲: Xanh Rừng & Vàng Cổ Điển.
+6.  **Arctic Frost** ❄️: Trắng Băng Giá & Xanh Dương Nhạt.
 
-### 🤚 Hand Gesture Controls (MediaPipe)
+### ❄️ 5. Hệ Thống Tuyết Rơi Vật Lý
+*   **1200+ bông tuyết** chuyển động tự nhiên.
+*   Mô phỏng lực gió, độ nhiễu loạn (turbulence) và trọng lực.
+*   Có thể Bật/Tắt bằng phím **'S'**.
 
-- **Wave hand** - Blow snow particles
-- **Pinch fingers** - Focus on a photo
-- **Make fist** - Return to tree mode
-- **Open palm** - Scatter particles in 3D space
+### 📸 6. Triển Lãm Ảnh 3D
+*   Cho phép người dùng tải lên nhiều ảnh cá nhân.
+*   Ảnh được hiển thị trong các khung tranh 3D bay xung quanh cây.
+*   Chế độ **FOCUS** cho phép zoom vào từng bức ảnh.
 
-### 📸 Photo Upload
+### 🎮 7. Điều Khiển Bằng Cử Chỉ Tay (AI Hand Tracking)
+Sử dụng Camera (Webcam) để tương tác không chạm:
+*   **Vẫy tay (Wave)**: Tạo gió thổi bay tuyết và các hạt bụi.
+*   **Nắm tay (Fist)**: Gom các hạt lại để tạo thành hình cây thông (Chế độ `TREE`).
+*   **Xòe tay (Open Palm)**: Phá vỡ cây, các hạt bay lơ lửng (Chế độ `SCATTER`).
+*   **Chạm ngón cái & trỏ (Pinch)**: Chọn và phóng to ảnh (trong chế độ `SCATTER`).
+*   *Lưu ý: Camera hiển thị nhỏ ở góc trái dưới để bạn dễ theo dõi cử chỉ.*
 
-- Upload multiple images
-- Photos displayed in metallic frames
-- Integrated into particle system
-- Responsive to all interaction modes
-
-### 🎯 Three Viewing Modes
-
-1. **TREE** - Traditional tree shape with rotating ornaments
-2. **SCATTER** - 3D explosion of particles for photo viewing
-3. **FOCUS** - Zoom into individual photos
-
-## 🎮 Controls
-
-| Key               | Action                         |
-| ----------------- | ------------------------------ |
-| **H**             | Hide/show UI controls          |
-| **S**             | Toggle snow on/off             |
-| **C**             | Cycle through color themes     |
-| **Hand gestures** | Interactive control via webcam |
-
-## 🚀 Quick Start
-
-### Run Locally
-
-Simply open `index.html` in a modern web browser:
-
-```bash
-# Clone the repository
-git clone git@github.com:HoangTechCS-AIE/christmas-tree-3d-nhh.git
-cd christmas-tree-3d-nhh
-
-# Open in browser (Linux)
-xdg-open index.html
-
-# Or just double-click the file
-```
-
-### Requirements
-
-- Modern web browser (Chrome, Firefox, Edge)
-- Webcam (optional, for hand gesture controls)
-- Internet connection (loads Three.js and MediaPipe from CDN)
-
-## 🛠️ Technology Stack
-
-- **Three.js** - 3D rendering and WebGL
-- **MediaPipe** - Hand tracking AI
-- **Vanilla JavaScript** - No framework dependencies
-- **CDN-based** - No build process required
-
-## 📦 Project Structure
-
-```
-christmas-tree-3d-nhh/
-├── index.html            # Main application (single file)
-└── README.md             # This file
-```
-
-## 🎨 Technical Highlights
-
-### Particle System
-
-- 1500 ornaments (spheres, boxes, candy canes)
-- 2500 ambient dust particles
-- 1200 dynamic snowflakes
-- **Total: 5200+ particles at 60 FPS**
-
-### Graphics Features
-
-- UnrealBloomPass post-processing
-- PBR materials (metallic, emissive)
-- Dynamic lighting (ambient, spot, directional)
-- Tone mapping for realistic colors
-- Exponential fog for depth
-
-### Performance Optimizations
-
-- Instanced rendering for snow
-- Distance-based particle culling
-- Smooth lerp animations
-- Efficient material references
-
-## 🎥 Demo
-
-[Add screenshots or GIF here]
-
-## 📝 License
-
-MIT License - Feel free to use and modify!
-
-## 👨‍💻 Author
-
-Created with ❤️ by HoangTechCS-AIE
-
-## 🙏 Credits
-
-- Original code concept: anhduc.onlien
-- Enhanced and extended with AI assistance
-- Three.js library
-- MediaPipe by Google
-
-## 🌟 Future Ideas
-
-- [ ] Snowflake texture variations
-- [ ] Music visualizer integration
-- [ ] Mobile touch controls
-- [ ] VR mode support
-- [ ] Save/share custom themes
+### 🌀 8. Hiệu Ứng Chuyển Động
+*   **Spiral Assembly**: Khi chuyển sang chế độ Cây, các hạt sẽ bay theo đường xoắn ốc từ dưới lên để xếp thành hình cây.
+*   **Bloom Effect**: Hiệu ứng phát sáng lấp lánh (Post-processing UnrealBloom).
 
 ---
 
-**Merry Christmas! 🎅🎄✨**
+## ⌨️ Bảng Điều Khiển (Phím Tắt)
+
+| Phím | Chức Năng |
+| :--- | :--- |
+| **H** | Ẩn / Hiện giao diện (Nút bấm, Hướng dẫn) |
+| **S** | Bật / Tắt hiệu ứng Tuyết rơi |
+| **C** | Đổi chủ đề màu sắc (Theme) |
+| **T** | Chuyển về chế độ Cây (Tree Mode) - *Phím tắt nhanh* |
+| **X** | Chuyển sang chế độ Bay Lơ Lửng (Scatter Mode) - *Phím tắt nhanh* |
+
+---
+
+## 🛠️ Cài Đặt & Chạy
+
+Dự án này là thuần Frontend, không cần cài đặt phức tạp.
+
+1.  **Tải mã nguồn**: Clone hoặc tải file `.zip` về máy.
+2.  **Chạy**: Mở file `index.html` trực tiếp bằng trình duyệt (Chrome, Edge, Firefox, Safari).
+3.  **Cấp quyền Camera**: Chọn "Allow" (Cho phép) khi trình duyệt hỏi quyền truy cập Camera để sử dụng tính năng điều khiển bằng tay.
+
+---
+
+## 📊 Thông Số Kỹ Thuật (Dành cho Dev)
+
+*   **Particle Count**: ~3000 hạt cấu thành cây + 2500 hạt bụi nền.
+*   **Công nghệ**: WebGL (Three.js), AI (MediaPipe Vision Tasks).
+*   **Hiệu năng**: Tối ưu hóa render loop 60 FPS.
+*   **Cấu trúc file**: Single-file component (`index.html`) chứa toàn bộ Logic, Style và Markup để dễ dàng chia sẻ và triển khai.
+
+---
+
+**Tác giả**: HoangTechCS-AIE
+*Chúc bạn một mùa Giáng Sinh an lành! 🎅🎄*
