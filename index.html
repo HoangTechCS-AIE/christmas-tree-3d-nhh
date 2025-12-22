@@ -305,12 +305,12 @@
         .wish-side-panel {
             position: fixed;
             top: 30%;
-            right: 5%;
-            width: 300px;
+            right: 15%;
+            width: 350px;
             text-align: right;
             z-index: 900;
             pointer-events: auto;
-            cursor: pointer;
+            cursor: default;
         }
 
         #wish-text {
@@ -334,6 +334,18 @@
 
         .hidden {
             display: none !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 
@@ -1164,41 +1176,63 @@
             const container = document.getElementById('wish-container');
             container.classList.remove('hidden');
             currentWishIndex = 0;
+
+            // Allow skipping to end by clicking? Maybe later. For now auto only.
+            container.onclick = null; // Disable manual click for next
+
             showNextWish();
         }
-
-        window.nextWish = function () {
-            showNextWish();
-        }
-
-        // Click on container to next
-        document.getElementById('wish-container').onclick = window.nextWish;
 
         function showNextWish() {
+            const el = document.getElementById('wish-text');
+            const note = document.querySelector('.wish-note');
+
+            // Hide note during sequence
+            if (note) note.style.display = 'none';
+
             if (currentWishIndex >= wishesList.length) {
-                // Loop or End? Let's Loop for nice effect or just stay at last
-                // Let's loop
-                currentWishIndex = 0;
+                // END: Show ALL wishes
+                el.innerHTML = '';
+                // Create a nice list
+                const ul = document.createElement('div');
+                ul.style.display = 'flex';
+                ul.style.flexDirection = 'column';
+                ul.style.gap = '15px';
+
+                wishesList.forEach(w => {
+                    const p = document.createElement('p');
+                    p.innerText = w;
+                    p.style.margin = '0';
+                    p.style.opacity = '0';
+                    p.style.animation = 'fadeIn 1s forwards';
+                    ul.appendChild(p);
+                });
+
+                el.appendChild(ul);
+                return;
             }
 
             const text = wishesList[currentWishIndex];
-            const el = document.getElementById('wish-text');
             el.innerHTML = ''; // Clear previous
 
             // Typewriter effect
             let i = 0;
-            const speed = 60; // Slightly slower for elegance
+            const speed = 70;
 
             function typeWriter() {
                 if (i < text.length) {
                     el.innerHTML += text.charAt(i);
                     i++;
                     setTimeout(typeWriter, speed);
+                } else {
+                    // Finished typing this line. Wait then next.
+                    setTimeout(() => {
+                        currentWishIndex++;
+                        showNextWish();
+                    }, 2000); // 2 seconds read time
                 }
             }
             typeWriter();
-
-            currentWishIndex++;
         }
 
         function setupEvents() {
