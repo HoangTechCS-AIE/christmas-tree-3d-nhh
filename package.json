@@ -1,0 +1,15 @@
+{
+    "name": "christmas-tree-3d",
+    "version": "1.0.0",
+    "description": "Interactive Christmas Tree with 3D effects",
+    "main": "index.html",
+    "dependencies": {
+        "@vercel/kv": "^1.0.1"
+    },
+    "scripts": {
+        "start": "echo 'No start script needed for static site'"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
