@@ -1212,6 +1212,27 @@
             showNextWish();
         }
 
+        function resetToCorner() {
+            const container = document.getElementById('wish-container');
+
+            // Fade out wishes
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.classList.add('hidden');
+                container.style.opacity = '1';
+                container.onclick = null;
+            }, 500);
+
+            // Bring back card
+            const card = document.getElementById('greeting-card-container');
+            card.classList.remove('hidden');
+
+            // Animate back to corner
+            requestAnimationFrame(() => {
+                card.classList.remove('center-stage');
+            });
+        }
+
         function showNextWish() {
             const el = document.getElementById('wish-text');
             const note = document.querySelector('.wish-note');
@@ -1222,7 +1243,6 @@
             if (currentWishIndex >= wishesList.length) {
                 // END: Show ALL wishes
                 el.innerHTML = '';
-                // Create a nice list
                 const ul = document.createElement('div');
                 ul.style.display = 'flex';
                 ul.style.flexDirection = 'column';
@@ -1237,12 +1257,29 @@
                     ul.appendChild(p);
                 });
 
+                // Add Close Instruction
+                const closeHint = document.createElement('div');
+                closeHint.innerHTML = '<span style="border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; font-size:12px; opacity:0.7; cursor:pointer;">Đóng lời chúc</span>';
+                closeHint.style.marginTop = '30px';
+                closeHint.style.opacity = '0';
+                closeHint.style.animation = 'fadeIn 1s 1s forwards';
+                ul.appendChild(closeHint);
+
                 el.appendChild(ul);
+
+                // Setup Close Logic
+                const container = document.getElementById('wish-container');
+                container.style.cursor = 'pointer';
+                container.onclick = resetToCorner;
+
+                // Auto-close after 25 seconds (reading time)
+                setTimeout(resetToCorner, 25000);
+
                 return;
             }
 
             const text = wishesList[currentWishIndex];
-            el.innerHTML = ''; // Clear previous
+            el.innerHTML = '';
 
             // Typewriter effect
             let i = 0;
