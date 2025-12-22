@@ -152,13 +152,15 @@
             position: absolute;
             bottom: 40px;
             right: 40px;
-            width: 120px;
-            height: 90px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 160px;
+            height: 120px;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 8px;
             overflow: hidden;
-            opacity: 0;
-            /* Hidden by default but functional */
+            opacity: 1;
             pointer-events: none;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
         }
 
         /* Countdown Timer */
@@ -749,6 +751,10 @@
         async function predictWebcam() {
             if (video.currentTime !== lastVideoTime) {
                 lastVideoTime = video.currentTime;
+
+                // Draw video to canvas
+                webcamCtx.drawImage(video, 0, 0, webcamCanvas.width, webcamCanvas.height);
+
                 if (handLandmarker) {
                     const result = handLandmarker.detectForVideo(video, performance.now());
                     processGestures(result);
@@ -763,6 +769,14 @@
                 const lm = result.landmarks[0];
                 STATE.hand.x = (lm[9].x - 0.5) * 2;
                 STATE.hand.y = (lm[9].y - 0.5) * 2;
+
+                // Draw landmarks
+                webcamCtx.fillStyle = '#00FFAA';
+                for (let p of lm) {
+                    webcamCtx.beginPath();
+                    webcamCtx.arc(p.x * webcamCanvas.width, p.y * webcamCanvas.height, 3, 0, 2 * Math.PI);
+                    webcamCtx.fill();
+                }
 
                 const thumb = lm[4]; const index = lm[8]; const wrist = lm[0];
                 const pinchDist = Math.hypot(thumb.x - index.x, thumb.y - index.y);
