@@ -118,9 +118,10 @@
             fetch('/api/wishes', {
                 headers: { 'x-admin-password': pass }
             })
-                .then(res => {
+                .then(async res => {
                     if (res.ok) return res.json();
-                    throw new Error('Sai mật khẩu rồi!');
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || 'Lỗi server (Check Console)');
                 })
                 .then(data => {
                     adminToken = pass;
