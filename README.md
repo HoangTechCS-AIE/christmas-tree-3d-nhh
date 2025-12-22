@@ -48,6 +48,7 @@ Sử dụng Camera (Webcam) để tương tác không chạm:
 
 ### 🌀 8. Hiệu Ứng Chuyển Động
 *   **Spiral Assembly**: Khi chuyển sang chế độ Cây, các hạt sẽ bay theo đường xoắn ốc từ dưới lên để xếp thành hình cây.
+*   **Heart Morphing (Mới)**: Biến hình cây thông thành trái tim 3D khổng lồ rực rỡ (Phím **'L'**).
 *   **Bloom Effect**: Hiệu ứng phát sáng lấp lánh (Post-processing UnrealBloom).
 
 ---
@@ -59,8 +60,9 @@ Sử dụng Camera (Webcam) để tương tác không chạm:
 | **H** | Ẩn / Hiện giao diện (Nút bấm, Hướng dẫn) |
 | **S** | Bật / Tắt hiệu ứng Tuyết rơi |
 | **C** | Đổi chủ đề màu sắc (Theme) |
-| **T** | Chuyển về chế độ Cây (Tree Mode) - *Phím tắt nhanh* |
+| **T** | Bật/Tắt hiển thị Camera 📷 |
 | **X** | Chuyển sang chế độ Bay Lơ Lửng (Scatter Mode) - *Phím tắt nhanh* |
+| **P** | Biến hình Trái Tim (Heart Mode) ❤️ |
 
 ---
 
