@@ -201,6 +201,123 @@
             letter-spacing: 1px;
             margin-top: 5px;
         }
+
+        /* Gift Button */
+        .gift-btn {
+            margin-top: 20px;
+            font-size: 40px;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 0 10px gold);
+            transition: transform 0.3s;
+        }
+
+        .gift-btn:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 2px solid #d4af37;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            color: #d4af37;
+            font-family: 'Times New Roman', serif;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .modal-content input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #d4af37;
+            background: #333;
+            color: white;
+            width: 200px;
+        }
+
+        .modal-content button {
+            padding: 10px 20px;
+            background: #d4af37;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        /* Wish Display Overlay */
+        #wish-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+            z-index: 150;
+            pointer-events: auto;
+            cursor: pointer;
+            text-shadow: 0 0 20px black;
+        }
+
+        #wish-text {
+            font-family: 'Cinzel', serif;
+            font-size: 32px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            line-height: 1.6;
+        }
+
+        .wish-note {
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 
     <style>
@@ -242,6 +359,11 @@
             <div class="hint-text">Nhấn 'H' để ẩn nút | 'S' tuyết ❄️ | 'C' đổi màu 🎨 | 'P' trái tim ❤️ | 'T' Webcam 📷
             </div>
         </div>
+
+        <div id="gift-box-btn" class="gift-btn" onclick="openGiftModal()">
+            🎁
+        </div>
+    </div>
     </div>
 
     <div id="countdown">
@@ -256,6 +378,24 @@
     <div id="webcam-wrapper">
         <video id="webcam" autoplay playsinline style="display:none;"></video>
         <canvas id="webcam-preview"></canvas>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="gift-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeGiftModal()">&times;</span>
+            <h2>Mở Hộp Quà Bí Mật 🎁</h2>
+            <p>Nhập mật khẩu để nhận lời chúc:</p>
+            <input type="password" id="guest-pass" placeholder="Mật khẩu...">
+            <button onclick="getWishes()">Mở Hộp</button>
+            <p id="gift-error" style="color: #ff4444; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <!-- Wish Display -->
+    <div id="wish-container" class="hidden">
+        <div id="wish-text"></div>
+        <div class="wish-note">(Click để xem câu tiếp theo...)</div>
     </div>
 
     <script type="module">
@@ -933,6 +1073,74 @@
                 STATE.hand.detected = false;
                 windForce.lerp(new THREE.Vector2(0, 0), 0.1);
             }
+        }
+
+        // --- WISHES SYSTEM ---
+        let wishesList = [];
+        let currentWishIndex = 0;
+
+        window.openGiftModal = function () {
+            document.getElementById('gift-modal').classList.remove('hidden');
+        }
+        window.closeGiftModal = function () {
+            document.getElementById('gift-modal').classList.add('hidden');
+        }
+
+        window.getWishes = function () {
+            const pass = document.getElementById('guest-pass').value;
+            fetch('/api/wishes', {
+                headers: { 'x-guest-password': pass }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Mật khẩu chưa đúng nha! 🎅');
+                    return res.json();
+                })
+                .then(data => {
+                    wishesList = data;
+                    if (!wishesList || wishesList.length === 0) throw new Error('Chưa có lời chúc nào cả!');
+
+                    closeGiftModal();
+                    startWishSequence();
+                })
+                .catch(err => {
+                    document.getElementById('gift-error').innerText = err.message;
+                });
+        }
+
+        function startWishSequence() {
+            const container = document.getElementById('wish-container');
+            container.classList.remove('hidden');
+            currentWishIndex = 0;
+            showNextWish();
+
+            // Click anywhere on container to next
+            container.onclick = showNextWish;
+        }
+
+        function showNextWish() {
+            if (currentWishIndex >= wishesList.length) {
+                // End sequence
+                document.getElementById('wish-container').classList.add('hidden');
+                return;
+            }
+
+            const text = wishesList[currentWishIndex];
+            const el = document.getElementById('wish-text');
+            el.innerHTML = '';
+
+            // Typewriter effect
+            let i = 0;
+            const speed = 50;
+            function typeWriter() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+            typeWriter();
+
+            currentWishIndex++;
         }
 
         function setupEvents() {
