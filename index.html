@@ -203,17 +203,35 @@
         }
 
         /* Gift Button */
+        /* Gift Button */
         .gift-btn {
-            margin-top: 20px;
-            font-size: 40px;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            font-size: 50px;
             cursor: pointer;
-            animation: bounce 2s infinite;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            animation: bounce 3s infinite;
             filter: drop-shadow(0 0 10px gold);
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            pointer-events: auto;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .gift-btn:hover {
-            transform: scale(1.2) rotate(10deg);
+            transform: scale(1.1) rotate(10deg);
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
         }
 
         @keyframes bounce {

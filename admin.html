@@ -95,26 +95,29 @@
     </div>
 
     <div id="dashboard" class="dashboard hidden">
-        <div style="display:flex; gap:10px; margin-bottom: 20px;">
-            <input type="text" id="new-wish" placeholder="Nhập lời chúc mới...">
-            <button onclick="addWish()">Thêm</button>
+        <div style="display:flex; gap:10px; margin-bottom: 20px; align-items: center;">
+            <input type="text" id="new-group-pass" placeholder="Mật khẩu nhóm mới..." style="width: 150px;">
+            <button onclick="addGroup()">+ Tạo Nhóm</button>
         </div>
-        <div id="wish-list">
-            <!-- List goes here -->
+
+        <div id="group-list">
+            <!-- Groups go here -->
         </div>
+
         <div style="margin-top: 20px; text-align: right;">
-            <button onclick="saveAll()" style="background: #4CAF50; color: white;">Lưu Thay Đổi</button>
+            <button onclick="saveAll()"
+                style="background: #4CAF50; color: white; font-size: 16px; padding: 12px 24px;">Lưu Tất Cả Thay
+                Đổi</button>
         </div>
-        <p id="status-msg" style="margin-top: 10px; color: yellow;"></p>
+        <p id="status-msg" style="margin-top: 10px; color: yellow; text-align: right;"></p>
     </div>
 
     <script>
-        let currentWishes = [];
+        let wishGroups = {}; // Object: { "pass": ["wish1", "wish2"] }
         let adminToken = '';
 
         function login() {
             const pass = document.getElementById('admin-pass').value;
-            // Test connection
             fetch('/api/wishes', {
                 headers: { 'x-admin-password': pass }
             })
@@ -125,52 +128,85 @@
                 })
                 .then(data => {
                     adminToken = pass;
-                    currentWishes = data;
+                    wishGroups = data; // Now an object
                     document.getElementById('login-section').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
-                    renderList();
+                    renderGroups();
                 })
                 .catch(err => {
                     document.getElementById('login-msg').innerText = err.message;
                 });
         }
 
-        function renderList() {
-            const list = document.getElementById('wish-list');
+        function renderGroups() {
+            const list = document.getElementById('group-list');
             list.innerHTML = '';
-            currentWishes.forEach((w, i) => {
-                const div = document.createElement('div');
-                div.className = 'wish-item';
-                div.innerHTML = `
-                    <input type="text" class="wish-text" value="${w}" onchange="updateWish(${i}, this.value)">
-                    <button class="delete-btn" onclick="removeWish(${i})">Xóa</button>
-                `;
-                list.appendChild(div);
-            });
-        }
 
-        function addWish() {
-            const input = document.getElementById('new-wish');
-            const val = input.value.trim();
-            if (val) {
-                currentWishes.push(val);
-                input.value = '';
-                renderList();
+            for (const [password, wishes] of Object.entries(wishGroups)) {
+                const groupDiv = document.createElement('div');
+                groupDiv.style.background = '#333';
+                groupDiv.style.marginBottom = '20px';
+                groupDiv.style.padding = '15px';
+                groupDiv.style.borderRadius = '8px';
+                groupDiv.style.border = '1px solid #d4af37';
+
+                let wishesHtml = '';
+                wishes.forEach((w, i) => {
+                    wishesHtml += `
+                        <div class="wish-item">
+                            <input type="text" class="wish-text" value="${w}" onchange="updateWish('${password}', ${i}, this.value)">
+                            <button class="delete-btn" onclick="removeWish('${password}', ${i})">Xóa</button>
+                        </div>
+                    `;
+                });
+
+                groupDiv.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:10px;">
+                        <h3 style="margin:0; color:#d4af37;">🔑 Password: <span style="color:#fff;">${password}</span></h3>
+                        <div>
+                            <button onclick="addWishToGroup('${password}')" style="background:#2196F3; font-size:12px;">+ Thêm Lời Chúc</button>
+                            <button onclick="removeGroup('${password}')" style="background:#ff4444; font-size:12px;">Xóa Nhóm</button>
+                        </div>
+                    </div>
+                    ${wishesHtml}
+                `;
+                list.appendChild(groupDiv);
             }
         }
 
-        function removeWish(index) {
-            currentWishes.splice(index, 1);
-            renderList(); // Re-render immediately
+        function addGroup() {
+            const pass = document.getElementById('new-group-pass').value.trim();
+            if (!pass) return alert("Nhập mật khẩu cho nhóm mới!");
+            if (wishGroups[pass]) return alert("Nhóm này đã tồn tại!");
+
+            wishGroups[pass] = ["Chúc mừng năm mới!"];
+            document.getElementById('new-group-pass').value = '';
+            renderGroups();
         }
 
-        function updateWish(index, val) {
-            currentWishes[index] = val;
+        function removeGroup(pass) {
+            if (confirm(`Xóa toàn bộ nhóm "${pass}"?`)) {
+                delete wishGroups[pass];
+                renderGroups();
+            }
+        }
+
+        function addWishToGroup(pass) {
+            wishGroups[pass].push("Lời chúc mới...");
+            renderGroups();
+        }
+
+        function removeWish(pass, index) {
+            wishGroups[pass].splice(index, 1);
+            renderGroups();
+        }
+
+        function updateWish(pass, index, val) {
+            wishGroups[pass][index] = val;
         }
 
         function saveAll() {
             const btn = document.querySelector('button[onclick="saveAll()"]');
-            const originalText = btn.innerText;
             btn.innerText = "Đang lưu...";
             btn.disabled = true;
 
@@ -180,24 +216,27 @@
                     'Content-Type': 'application/json',
                     'x-admin-password': adminToken
                 },
-                body: JSON.stringify({ wishes: currentWishes })
+                body: JSON.stringify(wishGroups)
             })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('status-msg').innerText = "Đã lưu thành công! ✅";
+                .then(async res => {
+                    if (res.ok) {
+                        document.getElementById('status-msg').innerText = "✅ Đã lưu thành công!";
                         setTimeout(() => document.getElementById('status-msg').innerText = "", 3000);
                     } else {
-                        alert('Lỗi: ' + data.error);
+                        throw new Error(await res.text());
                     }
                 })
-                .catch(err => alert('Lỗi kết nối'))
+                .catch(err => {
+                    alert("Lỗi khi lưu: " + err.message);
+                })
                 .finally(() => {
-                    btn.innerText = originalText;
+                    btn.innerText = "Lưu Thay Đổi";
                     btn.disabled = false;
                 });
         }
     </script>
+
+
 </body>
 
 </html>

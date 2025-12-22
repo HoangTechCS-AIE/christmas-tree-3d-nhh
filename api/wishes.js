@@ -30,31 +30,46 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Server Config Error: Missing Database URL (REDIS_URL)' });
     }
 
+    const WISH_KEY = 'wish_groups'; // New key for the object structure
+
     if (req.method === 'GET') {
         const guestPassword = req.headers['x-guest-password'];
         const adminPassword = req.headers['x-admin-password'];
 
-        if (guestPassword === process.env.GUEST_PASSWORD || adminPassword === process.env.ADMIN_PASSWORD) {
-            try {
-                let wishesStr = await redis.get('wishes');
-                let wishes = wishesStr ? JSON.parse(wishesStr) : null;
+        try {
+            // Fetch the entire group structure
+            let groupsStr = await redis.get(WISH_KEY);
+            let groups = groupsStr ? JSON.parse(groupsStr) : null;
 
-                if (!wishes) {
-                    wishes = [
+            // Initialize if empty
+            if (!groups) {
+                groups = {
+                    "guest": [
                         "Chúc bạn Giáng Sinh an lành! 🎄",
                         "Năm mới thật nhiều niềm vui và hạnh phúc! ❤️",
                         "Sức khỏe dồi dào, vạn sự như ý! 🎉"
-                    ];
-                    // Cache for 30 days
-                    await redis.set('wishes', JSON.stringify(wishes));
-                }
-                return res.status(200).json(wishes);
-            } catch (error) {
-                console.error("Redis GET Error:", error);
-                return res.status(500).json({ error: 'Connection Failed: ' + error.message });
+                    ]
+                };
+                // Cache for 30 days
+                await redis.set(WISH_KEY, JSON.stringify(groups));
             }
-        } else {
-            return res.status(401).json({ error: 'Sai mật khẩu rồi!' });
+
+            // 1. Admin Access: Return EVERYTHING
+            if (adminPassword === process.env.ADMIN_PASSWORD) {
+                return res.status(200).json(groups);
+            }
+
+            // 2. Guest Access: Check specific password key
+            if (guestPassword && groups[guestPassword]) {
+                return res.status(200).json(groups[guestPassword]);
+            }
+
+            // 3. Failed Auth
+            return res.status(401).json({ error: 'Mật khẩu không đúng hoặc chưa được tạo!' });
+
+        } catch (error) {
+            console.error("Redis GET Error:", error);
+            return res.status(500).json({ error: 'Connection Failed: ' + error.message });
         }
     }
 
@@ -64,22 +79,23 @@ export default async function handler(req, res) {
             return res.status(403).json({ error: 'Không có quyền Admin!' });
         }
 
-        const { wishes } = req.body;
-        if (!Array.isArray(wishes)) {
-            return res.status(400).json({ error: 'Dữ liệu không hợp lệ' });
-        }
-
         try {
-            await redis.set('wishes', JSON.stringify(wishes));
-            return res.status(200).json({ success: true, wishes });
+            // body should be the full object: { "pass1": [...], "pass2": [...] }
+            const newGroups = req.body;
+
+            if (!newGroups || typeof newGroups !== 'object') {
+                return res.status(400).json({ error: 'Dữ liệu không hợp lệ (phải là Object JSON)' });
+            }
+
+            // Save to Redis
+            await redis.set(WISH_KEY, JSON.stringify(newGroups));
+
+            return res.status(200).json({ success: true, groups: newGroups });
         } catch (error) {
             console.error("Redis SAVE Error:", error);
             return res.status(500).json({ error: 'Save Failed: ' + error.message });
         }
     }
 
-    else {
-        res.setHeader('Allow', ['GET', 'POST']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
-    }
+    return res.status(405).json({ error: 'Method Not Allowed' });
 }
