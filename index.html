@@ -377,8 +377,14 @@
             </div>
         </div>
 
-        <div id="gift-box-btn" class="gift-btn" onclick="openGiftModal()">
-            🎁
+        <div id="greeting-card-container" class="card-wrapper" onclick="openCard()">
+            <div class="card-envelope">💌</div>
+            <div id="card-form" class="card-form">
+                <p>Nhập mật mã trái tim ❤️</p>
+                <input type="password" id="guest-pass" placeholder="..."
+                    onkeydown="if(event.key==='Enter') getWishes(event)">
+                <button onclick="getWishes(event)">Mở</button>
+            </div>
         </div>
     </div>
     </div>
