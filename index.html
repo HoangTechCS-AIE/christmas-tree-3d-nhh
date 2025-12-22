@@ -302,6 +302,7 @@
         let handLandmarker, video, webcamCanvas, webcamCtx;
         let caneTexture;
         let snowSystem = [];
+        let starGroup; // Global reference for animation
         let snowEnabled = CONFIG.snow.enabled;
         let windForce = new THREE.Vector2(0, 0);
         let materialReferences = { auroraMat: null, purpleMat: null, orangeMat: null, frameMat: null };
@@ -643,17 +644,47 @@
                 particleSystem.push(new Particle(mesh, type, false));
             }
 
-            const starGeo = new THREE.OctahedronGeometry(1.2, 0);
-            const starMat = new THREE.MeshStandardMaterial({
-                color: 0xffdd88, emissive: 0xffaa00, emissiveIntensity: 1.0,
-                metalness: 1.0, roughness: 0
-            });
-            const star = new THREE.Mesh(starGeo, starMat);
-            star.position.set(0, CONFIG.particles.treeHeight / 2 + 1.2, 0);
-            mainGroup.add(star);
-
             mainGroup.add(photoMeshGroup);
+
+            // Call separate star creation
+            createStar();
         }
+
+        function createStar() {
+            starGroup = new THREE.Group();
+            starGroup.position.set(0, CONFIG.particles.treeHeight / 2 + 1.5, 0);
+
+            // Material for the star - Gold / Glowing
+            const starMat = new THREE.MeshStandardMaterial({
+                color: 0xffd700,
+                emissive: 0xffaa00,
+                emissiveIntensity: 2.0,
+                metalness: 1.0,
+                roughness: 0
+            });
+
+            // Geometry 1: Tetrahedron pointing up
+            const geo1 = new THREE.TetrahedronGeometry(1.5, 0);
+            const mesh1 = new THREE.Mesh(geo1, starMat);
+
+            // Geometry 2: Tetrahedron pointing down (inverted)
+            const geo2 = new THREE.TetrahedronGeometry(1.5, 0);
+            const mesh2 = new THREE.Mesh(geo2, starMat);
+            mesh2.rotation.x = Math.PI; // Flip it
+            mesh2.rotation.z = Math.PI / 4; // Slight offset for style if needed, or just keep it aligned
+
+            // Add a core light
+            const light = new THREE.PointLight(0xffaa00, 5, 20);
+            light.castShadow = true;
+
+            starGroup.add(mesh1);
+            starGroup.add(mesh2);
+            starGroup.add(light);
+
+            mainGroup.add(starGroup);
+        }
+
+
 
         function createDust() {
             const geo = new THREE.TetrahedronGeometry(0.08, 0);
@@ -885,6 +916,17 @@
                 } else {
                     STATE.rotation.y += 0.1 * dt;
                 }
+            }
+
+
+
+            // Star Animation
+            if (starGroup) {
+                starGroup.rotation.y += 1.0 * dt;
+                starGroup.rotation.z = Math.sin(clock.elapsedTime * 2) * 0.1;
+                // Pulsing scale
+                const s = 1.0 + 0.1 * Math.sin(clock.elapsedTime * 3);
+                starGroup.scale.set(s, s, s);
             }
 
             mainGroup.rotation.y = STATE.rotation.y;
