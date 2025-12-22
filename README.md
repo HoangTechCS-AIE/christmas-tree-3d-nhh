@@ -46,6 +46,17 @@ Sử dụng Camera (Webcam) để tương tác không chạm:
 *   **Chạm ngón cái & trỏ (Pinch)**: Chọn và phóng to ảnh (trong chế độ `SCATTER`).
 *   *Lưu ý: Camera hiển thị nhỏ ở góc trái dưới để bạn dễ theo dõi cử chỉ.*
 
+### 💌 9. Hệ Thống Lời Chúc Bí Mật (Greeting Card)
+*   **Thiệp Chúc Mừng**: Một phong bì 💌 bay lơ lửng ở góc màn hình. Khi nhấp vào, thiệp sẽ bay ra giữa màn hình để nhập mật khẩu.
+*   **Bảo Mật**: Mỗi mật khẩu (ví dụ: `guest`, `team`, `family`) sẽ mở ra một bộ lời chúc riêng biệt được lưu trữ trên **Redis Cloud**.
+*   **Hiệu Ứng Chữ**: Lời chúc được hiển thị lần lượt với hiệu ứng máy đánh chữ (Typewriter) trên nền phông chữ viết tay sang trọng ('Dancing Script').
+*   **Auto-Dismiss**: Sau khi hiển thị hết, lời chúc sẽ tự động tắt sau 25 giây hoặc khi người dùng nhấp vào.
+
+### 🛡️ 10. Admin Panel (Quản Trị Viên)
+*   Truy cập `/admin.html` để quản lý danh sách lời chúc.
+*   Tạo nhóm mật khẩu mới, thêm/xóa lời chúc cho từng nhóm.
+*   Bảo vệ bằng mật khẩu Admin riêng.
+
 ### 🌀 8. Hiệu Ứng Chuyển Động
 *   **Spiral Assembly**: Khi chuyển sang chế độ Cây, các hạt sẽ bay theo đường xoắn ốc từ dưới lên để xếp thành hình cây.
 *   **Heart Morphing (Mới)**: Biến hình cây thông thành trái tim 3D khổng lồ rực rỡ (Phím **'L'**).
@@ -80,6 +91,7 @@ Dự án này là thuần Frontend, không cần cài đặt phức tạp.
 
 *   **Particle Count**: ~3000 hạt cấu thành cây + 2500 hạt bụi nền.
 *   **Công nghệ**: WebGL (Three.js), AI (MediaPipe Vision Tasks).
+*   **Backend**: NodeJS (Serverless Functions), Redis (Upstash/Vercel KV) để lưu trữ lời chúc.
 *   **Hiệu năng**: Tối ưu hóa render loop 60 FPS.
 *   **Cấu trúc file**: Single-file component (`index.html`) chứa toàn bộ Logic, Style và Markup để dễ dàng chia sẻ và triển khai.
 
